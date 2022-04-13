@@ -23,8 +23,6 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -47,7 +45,6 @@ public class EmailController {
     String smtpPassword;
 
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
     public void sendERezeptToKIMAddress(EmailRequest emailRequest) {
 
         String fromKimAddress = "manuel.blechschmidt@incentergy.de";
