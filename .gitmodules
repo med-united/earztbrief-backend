@@ -1,0 +1,3 @@
+[submodule "src/main/resources/META-INF/resources"]
+	path = src/main/resources/META-INF/resources
+	url = git@github.com:med-united/patient-email-earztbrief-frontend.git
