@@ -26,13 +26,15 @@ public class GreetingResource {
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)
-    public void sendERezeptToKIMAddress(String fromKimAddress, 
-                                        String toKimAddress, 
-                                        String noteToPharmacy, 
-                                        String smtpHostServer, 
-                                        String smtpUser, 
-                                        String smtpPassword, 
+    public void sendERezeptToKIMAddress(String noteToPharmacy, 
                                         String eRezeptToken) {
+
+        String fromKimAddress = "manuel.blechschmidt@incentergy.de"; 
+        String toKimAddress = "manuel.blechschmidt@incentergy.de";
+        String smtpHostServer = "email-smtp.eu-central-1.amazonaws.com";
+        String smtpUser = "AKIA3ENSQUR5EQVJDIPH";
+        String smtpPassword = "BITqwRJJoxpMTa2sVgQzg7C4eidwRY795CoxjsL5b3H0";
+                                    
         try {
             Properties props = new Properties();
 
