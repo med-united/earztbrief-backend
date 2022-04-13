@@ -31,12 +31,20 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import health.medunited.model.EmailRequest;
 
 @Path("/sendEmail")
 public class EmailController {
     private static Logger log = Logger.getLogger(EmailController.class.getName());
+    
+    @ConfigProperty(name = "mail.smtp.host")
+    String smtpHostServer;
+    @ConfigProperty(name = "mail.smtp.user")
+    String smtpUser;
+    @ConfigProperty(name = "mail.smtp.password")
+    String smtpPassword;
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)
@@ -44,9 +52,6 @@ public class EmailController {
 
         String fromKimAddress = "manuel.blechschmidt@incentergy.de";
         String toKimAddress = emailRequest.getContactemail();
-        String smtpHostServer = "email-smtp.eu-central-1.amazonaws.com";
-        String smtpUser = "AKIA3ENSQUR5EQVJDIPH";
-        String smtpPassword = "BITqwRJJoxpMTa2sVgQzg7C4eidwRY795CoxjsL5b3H0";
 
         try {
             Properties props = new Properties();
