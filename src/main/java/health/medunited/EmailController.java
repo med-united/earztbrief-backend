@@ -20,17 +20,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/sendemail")
-public class GreetingResource {
-    private static Logger log = Logger.getLogger(GreetingResource.class.getName());
+import health.medunited.model.EmailRequest;
+
+@Path("/sendEmail")
+public class EmailController {
+    private static Logger log = Logger.getLogger(EmailController.class.getName());
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)
-    public void sendERezeptToKIMAddress(String noteToPharmacy, 
-                                        String eRezeptToken) {
+    public void sendERezeptToKIMAddress(EmailRequest emailRequest ) {
 
         String fromKimAddress = "manuel.blechschmidt@incentergy.de"; 
-        String toKimAddress = "manuel.blechschmidt@incentergy.de";
+        String toKimAddress = emailRequest.getContactemail();
         String smtpHostServer = "email-smtp.eu-central-1.amazonaws.com";
         String smtpUser = "AKIA3ENSQUR5EQVJDIPH";
         String smtpPassword = "BITqwRJJoxpMTa2sVgQzg7C4eidwRY795CoxjsL5b3H0";
@@ -59,10 +60,10 @@ public class GreetingResource {
 
 
             MimeBodyPart textPart = new MimeBodyPart();
-            textPart.setText(noteToPharmacy, "utf-8");
+            textPart.setText(emailRequest.getContactmessage(), "utf-8");
 
             MimeBodyPart erezeptTokenPart = new MimeBodyPart();
-            erezeptTokenPart.setText(eRezeptToken, "utf8");
+            erezeptTokenPart.setText(emailRequest.getContactmessage(), "utf8");
             
             Multipart multiPart = new MimeMultipart();
             multiPart.addBodyPart(textPart); // <-- first
