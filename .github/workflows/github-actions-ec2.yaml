@@ -33,7 +33,7 @@ jobs:
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
           working-directory: /home/ec2-user/earztbrief-backend
-          command: sudo deploy.sh
+          command: sudo mvn clean
 
 
 
