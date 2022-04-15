@@ -33,7 +33,7 @@ jobs:
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
           working-directory: /home/ec2-user/earztbrief-backend
-          command: mvn clean ; mvn clean package ; sudo cp -r /home/ec2-user/earztbrief-backend/target/quarkus-app/* /opt/med-united ; sudo systemctl restart med-united.service
+          command: mvn clean 
 
 
 
