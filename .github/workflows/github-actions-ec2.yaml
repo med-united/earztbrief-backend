@@ -15,6 +15,14 @@ jobs:
       - name: Checkout the files
         uses: actions/checkout@v2
 
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: ${{ secrets.TARGET_DIR }}
+
       - name: AWS SSM Send-Command
         uses: peterkimzz/aws-ssm-send-command@master
         id: ssm
@@ -24,13 +32,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
-          working-directory: /home/ec2-user
-          command: sudo mkdir test
+          working-directory: /home/ec2-user/earztbrief-backend
+          command: /bin/sh ./deploy.sh
 
-      # - name: Deploy to Server
-      #   uses: easingthemes/ssh-deploy@main
-      #   env:
-      #     SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-      #     REMOTE_HOST: ${{ secrets.HOST_DNS }}
-      #     REMOTE_USER: ${{ secrets.USERNAME }}
-      #     TARGET: ${{ secrets.TARGET_DIR }}
+      
