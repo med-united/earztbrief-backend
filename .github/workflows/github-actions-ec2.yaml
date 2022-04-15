@@ -33,6 +33,6 @@ jobs:
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
           working-directory: /home/ec2-user/earztbrief-backend
-          command: sudo mkdir testing
+          command: sudo /bin/sh ./deploy.sh
 
       
