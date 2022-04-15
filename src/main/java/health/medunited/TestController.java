@@ -8,7 +8,7 @@ public class TestController {
 
     @GET
     public String performTest() {
-        return "Test";
+        return "Test4";
     }
     
 }
