@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout the files
         uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --remote
 
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
