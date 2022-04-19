@@ -1,6 +1,5 @@
 version: 0.2
-os: linux
-files:
-  - source: /
-    destination: /home/ec2-user/test
+artifacts:
+  files:
+    - target/quarkus-app/quarkus-run.jar
 
