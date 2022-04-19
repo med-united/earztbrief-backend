@@ -28,7 +28,7 @@ jobs:
         with:
           command: |
             cd /home/ec2-user/earztbrief-backend
-            git submodule update --init
+            git submodule update --remote
             bash deploy.sh
           host: ${{ secrets.HOST_DNS }}
           user: ${{ secrets.USERNAME }}
