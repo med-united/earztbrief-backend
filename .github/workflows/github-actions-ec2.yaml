@@ -27,7 +27,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd /home/ec2-user
+            cd /home/ec2-user/earztbrief-backend
             bash deploy.sh
           host: ${{ secrets.HOST_DNS }}
           user: ${{ secrets.USERNAME }}
