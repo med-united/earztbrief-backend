@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout the files
         uses: actions/checkout@v2
-      - name: Checkout submodules
-        run: git submodule update --remote
 
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
@@ -30,6 +28,7 @@ jobs:
         with:
           command: |
             cd /home/ec2-user/earztbrief-backend
+            git submodule update --init
             bash deploy.sh
           host: ${{ secrets.HOST_DNS }}
           user: ${{ secrets.USERNAME }}
