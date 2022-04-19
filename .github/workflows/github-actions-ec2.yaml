@@ -30,7 +30,7 @@ jobs:
             cd /home/ec2-user
             sudo mkdir test
           host: ${{ secrets.HOST_DNS }}
-          user: root
+          user: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY}}
 
       # - name: AWS SSM Send-Command
