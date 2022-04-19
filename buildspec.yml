@@ -1,4 +1,8 @@
 version: 0.2
+build:
+    commands:
+      - echo Build started
+      - mvn clean package
 artifacts:
   files:
     - target/quarkus-app/quarkus-run.jar
