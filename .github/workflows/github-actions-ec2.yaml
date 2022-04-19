@@ -22,18 +22,28 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
-
-      - name: AWS SSM Send-Command
-        uses: peterkimzz/aws-ssm-send-command@master
-        id: ssm
+        
+      - name: Custom ssh action
+        uses: fifsky/ssh-action@master
         with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          instance-ids: ${{ secrets.INSTANCE_ID }}
+          command: |
+            cd /home/ec2-user
+            sudo mkdir test
+          host: ${{ secrets.HOST_DNS }}
+          user: root
+          key: ${{ secrets.EC2_SSH_KEY}}
 
-          working-directory: /home/ec2-user/earztbrief-backend
-          command: /bin/sh ./deploy.sh
+      # - name: AWS SSM Send-Command
+      #   uses: peterkimzz/aws-ssm-send-command@master
+      #   id: ssm
+      #   with:
+      #     aws-region: ${{ secrets.AWS_REGION }}
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     instance-ids: ${{ secrets.INSTANCE_ID }}
+
+      #     working-directory: /home/ec2-user/earztbrief-backend
+      #     command: /bin/sh ./deploy.sh
 
 
 
