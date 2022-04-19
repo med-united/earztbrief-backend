@@ -2,8 +2,8 @@ version: 0.2
 build:
     commands:
       - echo Build started
-      - mvn install
+      - mvn package
 artifacts:
   files:
-    - target/quarkus-app/quarkus-run.jar
+    - target/earztbrief-backend-1.0.0-SNAPSHOT.jar
 
