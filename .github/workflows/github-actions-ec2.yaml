@@ -28,7 +28,7 @@ jobs:
         with:
           command: |
             cd /home/ec2-user
-            sudo mkdir test
+            bash deploy.sh
           host: ${{ secrets.HOST_DNS }}
           user: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY}}
