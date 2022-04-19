@@ -1,9 +1,0 @@
-version: 0.2
-build:
-    commands:
-      - echo Build started
-      - mvn package
-artifacts:
-  files:
-    - '**/*'
-
