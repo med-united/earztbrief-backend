@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: earztbrief-sender
+  labels:
+    app: earztbrief-semder
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: earztbrief-sender
+  template:
+    metadata:
+      labels:
+        app: earztbrief-sender
+    spec:
+      containers:
+      - name: earztbrief-sender
+        image: 765415433338.dkr.ecr.eu-central-1.amazonaws.com/registry:earztbrief-sender
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080  
+        env:
+        - name: MAIL_SMTP_HOST
+          valueFrom:
+            secretKeyRef:
+              name: earztbrief-sender-secret
+              key: mailHost
+        - name: MAIL_SMTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: earztbrief-sender-secret
+              key: mailUser   
+        - name: MAIL_SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: earztbrief-sender-secret
+              key: mailPassword 
