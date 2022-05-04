@@ -36,3 +36,15 @@ spec:
             secretKeyRef:
               name: earztbrief-sender-secret
               key: mailPassword 
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: earztbrief-sender
+spec:
+  selector:
+    app: earztbrief-sender
+  ports:
+    - port: 8080
