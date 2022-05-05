@@ -86,7 +86,7 @@ spec:
   - host: earztbrief-sender.med-united.health
     http:
       paths:
-        - path: /sendEmail
+        - path: /
           pathType: Prefix
           backend:
             service:
