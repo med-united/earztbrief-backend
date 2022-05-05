@@ -64,13 +64,14 @@ public class EmailController {
             });
             MimeMessage msg = new MimeMessage(session);
             // set message headers
-            msg.addHeader("X-KIM-Dienstkennung", "eRezept;Zuweisung;V1.0");
+	    // https://fachportal.gematik.de/toolkit/dienstkennung-kim-kom-le
+            msg.addHeader("X-KIM-Dienstkennung", "Arztbrief;VHitG-Versand;V1.2");
 
             msg.setFrom(new InternetAddress(fromKimAddress));
 
             msg.setReplyTo(InternetAddress.parse(fromKimAddress, false));
 
-            msg.setSubject("E-Rezept direkte Zuweisung", "UTF-8");
+            msg.setSubject("Rezeptanforderung als eArztbrief", "UTF-8");
 
             MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(emailRequest.getContactmessage(), "utf-8");
@@ -116,7 +117,7 @@ public class EmailController {
             contentStream.beginText();
             contentStream.setFont(font, 12);
             contentStream.moveTextPositionByAmount(100, 700);
-            contentStream.drawString("Hello World");
+            contentStream.drawString("Rezeptanforderung");
             contentStream.endText();
 
             // Make sure that the content stream is closed:
