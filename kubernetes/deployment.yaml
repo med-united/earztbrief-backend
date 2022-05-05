@@ -1,3 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: earztbrief-sender-certificate
+  namespace: default
+spec:
+  dnsNames:
+    - earztbrief-sender.med-united.health
+  secretName: earztbrief-sender-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,7 +33,7 @@ spec:
         image: 765415433338.dkr.ecr.eu-central-1.amazonaws.com/earztbrief-sender:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080  
+        - containerPort: 8080
         env:
         - name: MAIL_SMTP_HOST
           valueFrom:
@@ -48,3 +62,34 @@ spec:
     app: earztbrief-sender
   ports:
     - port: 8080
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: earztbrief-sender
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/cors-allow-headers: Content-Type
+    nginx.ingress.kubernetes.io/cors-allow-methods: POST, GET, OPTIONS
+    nginx.ingress.kubernetes.io/cors-allow-origin: https://earztbrief.med-united.health
+    nginx.ingress.kubernetes.io/cors-expose-headers: X-Custom-Header
+    nginx.ingress.kubernetes.io/cors-max-age: "86400"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+spec:
+  tls:
+    - hosts:
+      - earztbrief-sender.med-united.health
+      secretName: earztbrief-sender-tls
+  rules:
+  - host: earztbrief-sender.med-united.health
+    http:
+      paths:
+        - path: /sendEmail
+          pathType: Prefix
+          backend:
+            service:
+              name: earztbrief-sender
+              port:
+                number: 8080
