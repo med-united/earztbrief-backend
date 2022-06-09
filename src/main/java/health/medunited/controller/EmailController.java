@@ -1,7 +1,5 @@
 package health.medunited.controller;
 
-import java.util.logging.Logger;
-
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -16,7 +14,7 @@ import health.medunited.service.EmailService;
 
 @Path("/sendEmail")
 public class EmailController {
-    
+
     @ConfigProperty(name = "mail.smtp.host")
     String smtpHostServer;
     @ConfigProperty(name = "mail.smtp.user")
@@ -32,16 +30,18 @@ public class EmailController {
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendERezeptToKIMAddress(EmailRequest emailRequest) {
 
-        String fromKimAddress = "manuel.blechschmidt@incentergy.de";
         String toKimAddress = emailRequest.getContactemail();
 
-        emailService.sendToDoctorFromTo(fromKimAddress, toKimAddress, emailRequest);
+        emailService.sendToDoctor(toKimAddress, emailRequest);
     }
 
     @POST
     @Path("/notifyPharmacy")
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendEmailToPharmacy(PharmacyRequest pharmacyRequest) {
-        emailService.notify(pharmacyRequest.getPharmacyEmail());
+
+        String toKimAddress = pharmacyRequest.getPharmacyEmail();
+
+        emailService.notify(toKimAddress);
     }
 }

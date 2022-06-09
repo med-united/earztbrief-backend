@@ -37,6 +37,8 @@ public class EmailService {
 
     private static final Logger log = Logger.getLogger(EmailService.class.getName());
 
+    final String fromKimAddress = "manuel.blechschmidt@incentergy.de";
+
     @ConfigProperty(name = "mail.smtp.host")
     String smtpHostServer;
     @ConfigProperty(name = "mail.smtp.user")
@@ -44,20 +46,10 @@ public class EmailService {
     @ConfigProperty(name = "mail.smtp.password")
     String smtpPassword;
 
-    public void sendToDoctorFromTo(String fromKimAddress, String toKimAddress, EmailRequest emailRequest) {
+    public void sendToDoctor(String toKimAddress, EmailRequest emailRequest) {
         try {
-            Properties props = new Properties();
 
-            props.put("mail.smtp.host", smtpHostServer);
-            props.put("mail.smtp.auth", true);
-
-            Session session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(smtpUser, smtpPassword);
-                }
-            });
-            MimeMessage msg = new MimeMessage(session);
+            MimeMessage msg = makeMessage();
 
             // https://fachportal.gematik.de/toolkit/dienstkennung-kim-kom-le
             msg.addHeader("X-KIM-Dienstkennung", "Arztbrief;VHitG-Versand;V1.2");
@@ -96,8 +88,26 @@ public class EmailService {
         }
     }
 
-    public void notify(String pharmacyEmail) {
-        System.out.println(pharmacyEmail);
+    public void notify(String toKimAddress) {
+        System.out.println(toKimAddress);
+        try {
+            MimeMessage msg = makeMessage();
+            msg.setFrom(new InternetAddress(fromKimAddress));
+            msg.setSubject("Anforderung Mitteilung", "UTF-8");
+            MimeBodyPart textPart = new MimeBodyPart();
+            textPart.setText("Mitteilung!", "utf-8");
+            Multipart multiPart = new MimeMultipart();
+            multiPart.addBodyPart(textPart);
+            msg.setContent(multiPart);
+            msg.setSentDate(new Date());
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toKimAddress, false));
+            log.info("Message is ready");
+            Transport.send(msg);
+            log.info("E-Mail sent successfully to: " + toKimAddress);
+        } catch (Exception e) {
+            log.log(Level.WARNING, "Error during sending E-Prescription", e);
+        }
+
     }
 
     private InputStream generatePdfFile() {
@@ -124,6 +134,22 @@ public class EmailService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private MimeMessage makeMessage() {
+        Properties props = new Properties();
+
+        props.put("mail.smtp.host", smtpHostServer);
+        props.put("mail.smtp.auth", true);
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(smtpUser, smtpPassword);
+            }
+        });
+
+        return new MimeMessage(session);
     }
 
 }
