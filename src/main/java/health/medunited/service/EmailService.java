@@ -1,4 +1,4 @@
-package health.medunited;
+package health.medunited.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
+import javax.enterprise.context.ApplicationScoped;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -21,8 +22,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -33,10 +32,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import health.medunited.model.EmailRequest;
 
-@Path("/sendEmail")
-public class EmailController {
-    private static Logger log = Logger.getLogger(EmailController.class.getName());
-    
+@ApplicationScoped
+public class EmailService {
+
+    private static final Logger log = Logger.getLogger(EmailService.class.getName());
+
     @ConfigProperty(name = "mail.smtp.host")
     String smtpHostServer;
     @ConfigProperty(name = "mail.smtp.user")
@@ -44,12 +44,7 @@ public class EmailController {
     @ConfigProperty(name = "mail.smtp.password")
     String smtpPassword;
 
-    @POST
-    public void sendERezeptToKIMAddress(EmailRequest emailRequest) {
-
-        String fromKimAddress = "manuel.blechschmidt@incentergy.de";
-        String toKimAddress = emailRequest.getContactemail();
-
+    public void sendToDoctorFromTo(String fromKimAddress, String toKimAddress, EmailRequest emailRequest) {
         try {
             Properties props = new Properties();
 
@@ -63,8 +58,8 @@ public class EmailController {
                 }
             });
             MimeMessage msg = new MimeMessage(session);
-            // set message headers
-	    // https://fachportal.gematik.de/toolkit/dienstkennung-kim-kom-le
+
+            // https://fachportal.gematik.de/toolkit/dienstkennung-kim-kom-le
             msg.addHeader("X-KIM-Dienstkennung", "Arztbrief;VHitG-Versand;V1.2");
 
             msg.setFrom(new InternetAddress(fromKimAddress));
@@ -80,11 +75,11 @@ public class EmailController {
             attachment.setContent(emailRequest.getAttachment(), "application/xml");
 
             MimeBodyPart pdf = new MimeBodyPart();
-            ByteArrayDataSource ds = new ByteArrayDataSource(generatePdfFile().readAllBytes(), "application/pdf"); 
+            ByteArrayDataSource ds = new ByteArrayDataSource(generatePdfFile().readAllBytes(), "application/pdf");
             pdf.setDataHandler(new DataHandler(ds));
 
             Multipart multiPart = new MimeMultipart();
-            multiPart.addBodyPart(textPart); 
+            multiPart.addBodyPart(textPart);
             multiPart.addBodyPart(attachment);
             multiPart.addBodyPart(pdf);
             msg.setContent(multiPart);
@@ -101,37 +96,34 @@ public class EmailController {
         }
     }
 
-    public InputStream generatePdfFile() {
-        // Create a document and add a page to it
+    public void notify(String pharmacyEmail) {
+        System.out.println(pharmacyEmail);
+    }
+
+    private InputStream generatePdfFile() {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
         document.addPage(page);
 
-        // Create a new font object selecting one of the PDF base fonts
         PDFont font = PDType1Font.HELVETICA_BOLD;
 
-        try (// Start a new content stream which will "hold" the to be created content
-            PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-            // Define a text content stream using the selected font, moving the cursor and
-            // drawing the text "Hello World"
+        try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
             contentStream.beginText();
             contentStream.setFont(font, 12);
             contentStream.moveTextPositionByAmount(100, 700);
             contentStream.drawString("Rezeptanforderung");
             contentStream.endText();
 
-            // Make sure that the content stream is closed:
             contentStream.close();
-            // Save the results and ensure that the document is properly closed:
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             document.save(out);
             document.close();
             ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
             return in;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return null;
         }
     }
+
 }
