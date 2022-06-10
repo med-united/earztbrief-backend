@@ -1,9 +1,5 @@
 package health.medunited.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -11,6 +7,7 @@ import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -23,11 +20,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import health.medunited.model.EmailRequest;
@@ -37,7 +29,7 @@ public class EmailService {
 
     private static final Logger log = Logger.getLogger(EmailService.class.getName());
 
-    final String fromKimAddress = "manuel.blechschmidt@incentergy.de";
+    static final String FROMKIMADDRESS = "manuel.blechschmidt@incentergy.de";
 
     @ConfigProperty(name = "mail.smtp.host")
     String smtpHostServer;
@@ -46,19 +38,17 @@ public class EmailService {
     @ConfigProperty(name = "mail.smtp.password")
     String smtpPassword;
 
+    @Inject
+    PdfService pdfService;
+
     public void sendToDoctor(String toKimAddress, EmailRequest emailRequest) {
         try {
 
-            MimeMessage msg = makeMessage();
+            MimeMessage msg = makeMessageEnvelope();
 
             // https://fachportal.gematik.de/toolkit/dienstkennung-kim-kom-le
-            msg.addHeader("X-KIM-Dienstkennung", "Arztbrief;VHitG-Versand;V1.2");
-
-            msg.setFrom(new InternetAddress(fromKimAddress));
-
-            msg.setReplyTo(InternetAddress.parse(fromKimAddress, false));
-
-            msg.setSubject("Rezeptanforderung als eArztbrief", "UTF-8");
+            setMessageAttributes(msg, "Rezeptanforderung als eArztbrief", "X-KIM-Dienstkennung",
+                    "Arztbrief;VHitG-Versand;V1.2");
 
             MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(emailRequest.getContactmessage(), "utf-8");
@@ -67,7 +57,8 @@ public class EmailService {
             attachment.setContent(emailRequest.getAttachment(), "application/xml");
 
             MimeBodyPart pdf = new MimeBodyPart();
-            ByteArrayDataSource ds = new ByteArrayDataSource(generatePdfFile().readAllBytes(), "application/pdf");
+            ByteArrayDataSource ds = new ByteArrayDataSource(pdfService.generatePdfFile().readAllBytes(),
+                    "application/pdf");
             pdf.setDataHandler(new DataHandler(ds));
 
             Multipart multiPart = new MimeMultipart();
@@ -75,8 +66,6 @@ public class EmailService {
             multiPart.addBodyPart(attachment);
             multiPart.addBodyPart(pdf);
             msg.setContent(multiPart);
-
-            msg.setSentDate(new Date());
 
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toKimAddress, false));
             log.info("Message is ready");
@@ -89,18 +78,20 @@ public class EmailService {
     }
 
     public void notify(String toKimAddress) {
-        System.out.println(toKimAddress);
         try {
-            MimeMessage msg = makeMessage();
-            msg.setFrom(new InternetAddress(fromKimAddress));
-            msg.setSubject("Anforderung Mitteilung", "UTF-8");
+            MimeMessage msg = makeMessageEnvelope();
+
+            setMessageAttributes(msg, "Anforderung Mitteilung", null, null);
+
             MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText("Mitteilung!", "utf-8");
+
             Multipart multiPart = new MimeMultipart();
             multiPart.addBodyPart(textPart);
+
             msg.setContent(multiPart);
-            msg.setSentDate(new Date());
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toKimAddress, false));
+            
             log.info("Message is ready");
             Transport.send(msg);
             log.info("E-Mail sent successfully to: " + toKimAddress);
@@ -110,33 +101,7 @@ public class EmailService {
 
     }
 
-    private InputStream generatePdfFile() {
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
-
-        PDFont font = PDType1Font.HELVETICA_BOLD;
-
-        try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-            contentStream.beginText();
-            contentStream.setFont(font, 12);
-            contentStream.moveTextPositionByAmount(100, 700);
-            contentStream.drawString("Rezeptanforderung");
-            contentStream.endText();
-
-            contentStream.close();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            document.save(out);
-            document.close();
-            ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-            return in;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private MimeMessage makeMessage() {
+    private MimeMessage makeMessageEnvelope() {
         Properties props = new Properties();
 
         props.put("mail.smtp.host", smtpHostServer);
@@ -150,6 +115,20 @@ public class EmailService {
         });
 
         return new MimeMessage(session);
+    }
+
+    private void setMessageAttributes(MimeMessage msg, String subject, String headerName, String headerValue) {
+        try {
+            if (headerName != null && headerValue != null) {
+                msg.setHeader(headerName, headerValue);
+            }
+            msg.setFrom(new InternetAddress(FROMKIMADDRESS));
+            msg.setReplyTo(InternetAddress.parse(FROMKIMADDRESS, false));
+            msg.setSubject(subject, "UTF-8");
+            msg.setSentDate(new Date());
+        } catch (Exception e) {
+            log.log(Level.WARNING, "Error during setting message attributes", e);
+        }
     }
 
 }
