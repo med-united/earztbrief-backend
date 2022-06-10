@@ -1,4 +1,4 @@
-# mail-sender-backend project
+# Mail-sender-backend project
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
