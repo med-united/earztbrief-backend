@@ -1,4 +1,4 @@
-# earztbrief-backend project
+# mail-sender-backend project
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 

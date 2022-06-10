@@ -1,12 +1,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: earztbrief-sender-certificate
+  name: mail-sender-certificate
   namespace: default
 spec:
   dnsNames:
-    - earztbrief-sender.med-united.health
-  secretName: earztbrief-sender-tls
+    - mail-sender.med-united.health
+  secretName: mail-sender-tls
   issuerRef:
     name: letsencrypt-cluster-issuer
     kind: ClusterIssuer
@@ -15,22 +15,22 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: earztbrief-sender
+  name: mail-sender
   labels:
-    app: earztbrief-sender
+    app: mail-sender
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: earztbrief-sender
+      app: mail-sender
   template:
     metadata:
       labels:
-        app: earztbrief-sender
+        app: mail-sender
     spec:
       containers:
-      - name: earztbrief-sender
-        image: 765415433338.dkr.ecr.eu-central-1.amazonaws.com/earztbrief-sender:$IMAGE_TAG
+      - name: mail-sender
+        image: 765415433338.dkr.ecr.eu-central-1.amazonaws.com/mail-sender:$IMAGE_TAG
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -38,17 +38,17 @@ spec:
         - name: MAIL_SMTP_HOST
           valueFrom:
             secretKeyRef:
-              name: earztbrief-sender-secret
+              name: mail-sender-secret
               key: mailHost
         - name: MAIL_SMTP_USER
           valueFrom:
             secretKeyRef:
-              name: earztbrief-sender-secret
+              name: mail-sender-secret
               key: mailUser   
         - name: MAIL_SMTP_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: earztbrief-sender-secret
+              name: mail-sender-secret
               key: mailPassword 
 
 ---
@@ -56,10 +56,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: earztbrief-sender
+  name: mail-sender
 spec:
   selector:
-    app: earztbrief-sender
+    app: mail-sender
   ports:
     - port: 8080
 
@@ -68,7 +68,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: earztbrief-sender
+  name: mail-sender
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/cors-allow-headers: Content-Type
@@ -80,16 +80,16 @@ metadata:
 spec:
   tls:
     - hosts:
-      - earztbrief-sender.med-united.health
-      secretName: earztbrief-sender-tls
+      - mail-sender.med-united.health
+      secretName: mail-sender-tls
   rules:
-  - host: earztbrief-sender.med-united.health
+  - host: mail-sender.med-united.health
     http:
       paths:
         - path: /
           pathType: Prefix
           backend:
             service:
-              name: earztbrief-sender
+              name: mail-sender
               port:
                 number: 8080
