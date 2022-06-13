@@ -1,73 +1,69 @@
 package health.medunited.controller;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import health.medunited.model.EmailRequest;
 import health.medunited.model.PharmacyRequest;
 import health.medunited.service.EmailService;
-import health.medunited.service.PdfService;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
+import io.quarkus.mailer.Mail;
+import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
-import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @QuarkusTest
-@TestHTTPEndpoint(EmailController.class)
-@Disabled
 class EmailControllerTest {
 
-    @InjectMock
+    private static final String TODOCTOR = "doctor@testmail.test";
+
+    private static final String TOPHARMACY = "pharmacy@testmail.test";
+
+    @Inject
     EmailService emailService;
 
-    @InjectMock
-    PdfService pdfService;
+    @Inject
+    MockMailbox mailbox;
 
     @Test
-    void testSuccessfullSendingToDoctor() {
+    void testEarztbriefSending() throws MessagingException, IOException {
 
-        EmailRequest emailRequest = new EmailRequest("testName", "simone.stifano@incentergy.de",
-                "I would like to receive a medication",
-                "An earztbrief in xml");
-
-        Mockito.doNothing().when(emailService).sendToDoctor(emailRequest.getContactemail(), emailRequest);
-
-        Mockito.doReturn(setUpPdfDocument()).when(pdfService).generatePdfFile();
+        EmailRequest request = new EmailRequest("Test Name", TODOCTOR, "Earztbrief request", "Xml text");
 
         given()
-                .contentType(ContentType.JSON)
-                .body(emailRequest)
+                .contentType("application/json")
+                .body(request)
                 .when()
-                .post("/earztbrief")
+                .post("/sendEmail/earztbrief")
                 .then()
                 .statusCode(204);
+
+        List<Mail> sent = mailbox.getMessagesSentTo(TODOCTOR);
+        assertThat("Sent messages doesn't match", sent.size() == 1);
+        Mail actual = sent.get(0);
+        assertThat("Wrong subject", actual.getSubject().equals("Rezeptanforderung als eArztbrief"));
     }
 
     @Test
-    void testSuccessfullNotificationSent() {
+    void testPharmacyNotifier() throws MessagingException, IOException {
 
-        PharmacyRequest pharmacyRequest = new PharmacyRequest("simone.stifano@incentergy.de");
+        PharmacyRequest request = new PharmacyRequest(TOPHARMACY);
 
         given()
-                .header("Content-Type", "application/json")
-                .body(pharmacyRequest)
+                .contentType("application/json")
+                .body(new PharmacyRequest(TOPHARMACY))
                 .when()
-                .post("/notifyPharmacy")
+                .post("/sendEmail/notifyPharmacy")
                 .then()
                 .statusCode(204);
-    }
 
-    private InputStream setUpPdfDocument() {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        return new ByteArrayInputStream(out.toByteArray());
+        List<Mail> sent = mailbox.getMessagesSentTo(TOPHARMACY);
+        assertThat("Sent messages doesn't match", sent.size() == 1);
+        Mail actual = sent.get(0);
+        assertThat("Wrong subject", actual.getSubject().equals("Anforderung Mitteilung"));
     }
 }

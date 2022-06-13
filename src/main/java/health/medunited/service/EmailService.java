@@ -10,6 +10,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.util.ByteArrayDataSource;
 
 import health.medunited.model.EmailRequest;
+import health.medunited.model.MailSubjects;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
 
@@ -35,7 +36,7 @@ public class EmailService {
                     "application/pdf");
             pdf.setDataHandler(new DataHandler(ds));
 
-            mailer.send(Mail.withText(toKimAddress, "Rezeptanforderung als eArztbrief",
+            mailer.send(Mail.withText(toKimAddress, MailSubjects.EARZTBRIEF.value,
                             emailRequest.getContactmessage())
                     .addAttachment("xmlattach",
                             attachment.getInputStream().readAllBytes(), "text/xml")
@@ -51,7 +52,7 @@ public class EmailService {
 
     public void notify(String toKimAddress) {
 
-        mailer.send(Mail.withText(toKimAddress, "Anforderung Mitteilung", "Mitteilung!"));
+        mailer.send(Mail.withText(toKimAddress, MailSubjects.PHARMACYNOTIFIER.value, "Mitteilung!"));
 
     }
 
