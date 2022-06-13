@@ -6,6 +6,17 @@ public class EmailRequest {
     private String contactmessage;
     private String attachment;
 
+    public EmailRequest(String contactname, String contactemail, String contactmessage, String attachment) {
+        this.contactname = contactname;
+        this.contactemail = contactemail;
+        this.contactmessage = contactmessage;
+        this.attachment = attachment;
+    }
+
+    public EmailRequest () {
+        
+    }
+
     public String getContactname() {
         return contactname;
     }

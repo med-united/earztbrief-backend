@@ -11,7 +11,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import health.medunited.model.EmailRequest;
 import health.medunited.service.EmailService;
-import health.medunited.service.PdfService;
 
 @Path("/sendEmail")
 public class EmailController {
