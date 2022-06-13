@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
-import health.medunited.config.MailConfiguration;
+import health.medunited.config.MailConfig;
 import health.medunited.model.EmailRequest;
 
 @ApplicationScoped
@@ -31,7 +31,7 @@ public class EmailService {
     static final String FROMKIMADDRESS = "manuel.blechschmidt@incentergy.de";
 
     @Inject
-    MailConfiguration mailConfiguration;
+    MailConfig mailConfig;
 
     @Inject
     PdfService pdfService;
@@ -99,13 +99,13 @@ public class EmailService {
     private MimeMessage makeMessageEnvelope() {
         Properties props = new Properties();
 
-        props.put("mail.smtp.host", mailConfiguration.host());
+        props.put("mail.smtp.host", mailConfig.getSmtpHost());
         props.put("mail.smtp.auth", true);
 
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(mailConfiguration.user(), mailConfiguration.password());
+                return new PasswordAuthentication(mailConfig.getSmtpUser(), mailConfig.getSmtpPassword());
             }
         });
 
