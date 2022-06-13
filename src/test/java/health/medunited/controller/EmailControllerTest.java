@@ -1,16 +1,10 @@
 package health.medunited.controller;
 
 import health.medunited.config.MailConfig;
-import io.smallrye.config.SmallRyeConfig;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import health.medunited.config.MailConfiguration;
 import health.medunited.model.EmailRequest;
 import health.medunited.model.PharmacyRequest;
 import health.medunited.service.EmailService;
@@ -18,13 +12,11 @@ import health.medunited.service.PdfService;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
-import io.quarkus.test.junit.mockito.InjectSpy;
 import io.restassured.http.ContentType;
 
 import javax.inject.Inject;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,6 +24,7 @@ import java.io.InputStream;
 
 @QuarkusTest
 @TestHTTPEndpoint(EmailController.class)
+@Disabled
 class EmailControllerTest {
 
     @InjectMock
