@@ -22,7 +22,6 @@ import java.io.InputStream;
 
 @QuarkusTest
 @TestHTTPEndpoint(EmailController.class)
-@Disabled
 public class EmailControllerTest {
 
     @InjectMock
