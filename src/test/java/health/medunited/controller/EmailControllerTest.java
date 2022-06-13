@@ -1,6 +1,7 @@
 package health.medunited.controller;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -21,6 +22,7 @@ import java.io.InputStream;
 
 @QuarkusTest
 @TestHTTPEndpoint(EmailController.class)
+@Disabled
 public class EmailControllerTest {
 
     @InjectMock
