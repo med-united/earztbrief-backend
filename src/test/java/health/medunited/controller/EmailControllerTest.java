@@ -1,6 +1,5 @@
 package health.medunited.controller;
 
-import health.medunited.config.MailConfig;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,9 +31,6 @@ class EmailControllerTest {
 
     @InjectMock
     PdfService pdfService;
-
-    @Inject
-    MailConfig mailConfig;
 
     @Test
     void testSuccessfullSendingToDoctor() {
