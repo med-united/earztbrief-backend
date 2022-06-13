@@ -1,5 +1,6 @@
 package health.medunited.controller;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -27,6 +28,13 @@ public class EmailControllerTest {
 
     @InjectMock
     PdfService pdfService;
+
+    @ConfigProperty(name = "mail.smtp.host")
+    String smtpHostServer;
+    @ConfigProperty(name = "mail.smtp.user")
+    String smtpUser;
+    @ConfigProperty(name = "mail.smtp.password")
+    String smtpPassword;
 
     @Test
     public void testSuccessfullSendingToDoctor() {
