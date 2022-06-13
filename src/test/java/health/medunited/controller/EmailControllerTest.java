@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.google.inject.Inject;
+
+import health.medunited.config.MailConfiguration;
 import health.medunited.model.EmailRequest;
 import health.medunited.model.PharmacyRequest;
 import health.medunited.service.EmailService;
@@ -29,6 +32,9 @@ public class EmailControllerTest {
 
     @InjectMock
     PdfService pdfService;
+
+    @Inject
+    MailConfiguration mailConfiguration;
 
     @Test
     public void testSuccessfullSendingToDoctor() {
