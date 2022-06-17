@@ -16,7 +16,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 @ApplicationScoped
 public class PdfService {
 
-    public InputStream generatePdfFile() {
+    public InputStream generatePdfFile(ArrayList<String> datamatrices) {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
         document.addPage(page);
@@ -40,5 +40,5 @@ public class PdfService {
             return null;
         }
     }
-    
+
 }

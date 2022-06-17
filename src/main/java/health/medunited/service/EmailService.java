@@ -32,7 +32,7 @@ public class EmailService {
             attachment.setContent(emailRequest.getAttachment(), "text/xml");
 
             MimeBodyPart pdf = new MimeBodyPart();
-            ByteArrayDataSource ds = new ByteArrayDataSource(pdfService.generatePdfFile().readAllBytes(),
+            ByteArrayDataSource ds = new ByteArrayDataSource(pdfService.generatePdfFile(emailRequest.getDatamatrices()).readAllBytes(),
                     "application/pdf");
             pdf.setDataHandler(new DataHandler(ds));
 
