@@ -6,10 +6,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
-import health.medunited.model.PharmacyRequest;
+import health.medunited.model.*;
 
-import health.medunited.model.EmailRequest;
 import health.medunited.service.EmailService;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 @Path("/sendEmail")
 public class EmailController {
@@ -20,11 +20,9 @@ public class EmailController {
     @POST
     @Path("/earztbrief")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void sendERezeptToKIMAddress(EmailRequest emailRequest) {
+    public void sendERezeptToKIMAddress(LetterRequest letterRequest) {
 
-        String toKimAddress = emailRequest.getContactemail();
-
-        emailService.sendToDoctor(toKimAddress, emailRequest);
+        emailService.sendToDoctor(letterRequest);
     }
 
     @POST
@@ -32,8 +30,15 @@ public class EmailController {
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendEmailToPharmacy(PharmacyRequest pharmacyRequest) {
 
-        String toKimAddress = pharmacyRequest.getPharmacyEmail();
-
-        emailService.notify(toKimAddress);
+        emailService.notify(pharmacyRequest);
     }
+
+    @POST
+    @Path("/powershell")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public void sendPowershellScript(@MultipartForm PowershellRequest powershellRequest) {
+
+        emailService.sendPowershellScript(powershellRequest);
+    }
+
 }
