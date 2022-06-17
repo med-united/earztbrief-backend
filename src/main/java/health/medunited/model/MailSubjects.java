@@ -3,7 +3,8 @@ package health.medunited.model;
 public enum MailSubjects {
 
     EARZTBRIEF("Rezeptanforderung als eArztbrief"),
-    PHARMACYNOTIFIER("Anforderung Mitteilung");
+    PHARMACYNOTIFIER("Anforderung Mitteilung"),
+    T2MED("Rezeptanforderung als t2med");
 
     public final String value;
 
