@@ -1,16 +1,15 @@
 package health.medunited.controller;
 
-import health.medunited.model.EmailRequest;
+import health.medunited.model.LetterRequest;
 import health.medunited.model.PharmacyRequest;
 import health.medunited.service.EmailService;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.junit.QuarkusTest;
+
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
-import javax.mail.MessagingException;
-import java.io.IOException;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -30,9 +29,9 @@ class EmailControllerTest {
     MockMailbox mailbox;
 
     @Test
-    void testEarztbriefSending() throws MessagingException, IOException {
+    void testEarztbriefSending() {
 
-        EmailRequest request = new EmailRequest("Test Name", TODOCTOR, "Earztbrief request", "Xml text");
+        LetterRequest request = new LetterRequest("Test Name", TODOCTOR, "Earztbrief request", "Xml text");
 
         given()
                 .contentType("application/json")
@@ -49,13 +48,13 @@ class EmailControllerTest {
     }
 
     @Test
-    void testPharmacyNotifier() throws MessagingException, IOException {
+    void testPharmacyNotifier() {
 
-        PharmacyRequest request = new PharmacyRequest(TOPHARMACY);
+        PharmacyRequest request = new PharmacyRequest(TOPHARMACY, "patient", "doctor", 123, "active", null);
 
         given()
                 .contentType("application/json")
-                .body(new PharmacyRequest(TOPHARMACY))
+                .body(request)
                 .when()
                 .post("/sendEmail/notifyPharmacy")
                 .then()

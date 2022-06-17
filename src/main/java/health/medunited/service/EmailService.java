@@ -1,23 +1,24 @@
 package health.medunited.service;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.activation.DataHandler;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.util.ByteArrayDataSource;
 
-import health.medunited.model.EmailRequest;
+import health.medunited.model.LetterRequest;
 import health.medunited.model.MailSubjects;
+import health.medunited.model.PharmacyRequest;
+import health.medunited.model.PowershellRequest;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @ApplicationScoped
 public class EmailService {
 
-    private static final Logger log = Logger.getLogger(EmailService.class.getName());
+    private static final Logger log = LogManager.getLogger(EmailService.class);
 
     @Inject
     PdfService pdfService;
@@ -25,11 +26,13 @@ public class EmailService {
     @Inject
     Mailer mailer;
 
-    public void sendToDoctor(String toKimAddress, EmailRequest emailRequest) {
+    public void sendToDoctor(LetterRequest letterRequest) {
+
+        String toKimAddress = letterRequest.getContactEmail();
 
         try {
             MimeBodyPart attachment = new MimeBodyPart();
-            attachment.setContent(emailRequest.getAttachment(), "text/xml");
+            attachment.setContent(letterRequest.getAttachment(), "text/xml");
 
             MimeBodyPart pdf = new MimeBodyPart();
             ByteArrayDataSource ds = new ByteArrayDataSource(pdfService.generatePdfFile(emailRequest.getDatamatrices()).readAllBytes(),
@@ -37,23 +40,50 @@ public class EmailService {
             pdf.setDataHandler(new DataHandler(ds));
 
             mailer.send(Mail.withText(toKimAddress, MailSubjects.EARZTBRIEF.value,
-                            emailRequest.getContactmessage())
+                            letterRequest.getContactMessage())
                     .addAttachment("xmlattach",
                             attachment.getInputStream().readAllBytes(), "text/xml")
                     .addAttachment("pdfattach",
                             pdf.getInputStream().readAllBytes(), "application/pdf")
 
             );
-            log.info("E-Mail sent successfully to: " + toKimAddress);
+            log.info("E-Mail sent successfully to: {}", toKimAddress);
         } catch (Exception e) {
-            log.log(Level.WARNING, "Error during sending E-Prescription", e);
+            log.error("Error during sending E-Prescription: {}", e.getMessage());
         }
     }
 
-    public void notify(String toKimAddress) {
+    public void notify(PharmacyRequest pharmacyRequest) {
 
-        mailer.send(Mail.withText(toKimAddress, MailSubjects.PHARMACYNOTIFIER.value, "Mitteilung!"));
+        String toKimAddress = pharmacyRequest.getPharmacyEmail();
 
+        mailer.send(Mail.withText(toKimAddress, MailSubjects.PHARMACYNOTIFIER.value, buildEmailText(pharmacyRequest)));
+    }
+
+    public void sendPowershellScript(PowershellRequest powershellRequest) {
+
+        String toKimAddress = powershellRequest.getDoctorEmail();
+
+        try {
+            MimeBodyPart attachment = new MimeBodyPart();
+            attachment.attachFile(powershellRequest.getFile());
+
+            mailer.send(Mail.withText(toKimAddress, MailSubjects.T2MED.value, "Please, run this Powershell Script")
+                    .addAttachment("t2med.txt",
+                            attachment.getInputStream().readAllBytes(), "text/plain")
+            );
+            log.info("E-Mail sent successfully to: {}", toKimAddress);
+        } catch (Exception e) {
+            log.error("Error during sending E-Prescription: {}", e.getMessage());
+        }
+    }
+
+    private String buildEmailText(PharmacyRequest pharmacyRequest) {
+        return pharmacyRequest.getPatient()
+                + ", " + pharmacyRequest.getDoctor()
+                + ", " + pharmacyRequest.getPzn()
+                + ", " + pharmacyRequest.getStatus()
+                + ", " + pharmacyRequest.getRequestDate();
     }
 
 }
