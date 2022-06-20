@@ -15,7 +15,7 @@ import io.quarkus.mailer.Mailer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class EmailService {
@@ -40,7 +40,7 @@ public class EmailService {
             pdf.setDataHandler(new DataHandler(ds));
 
             Mail email = Mail.withText(toKimAddress, MailSubjects.EARZTBRIEF.value, letterRequest.getContactMessage());
-            ArrayList<String> allXMLs = letterRequest.getAttachment();
+            List<String> allXMLs = letterRequest.getAttachment();
             for (int i = 0; i < allXMLs.size(); i++) {
                 String xml = allXMLs.get(i);
                 MimeBodyPart attachment = new MimeBodyPart();

@@ -4,7 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -18,7 +19,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 @ApplicationScoped
 public class PdfService {
 
-    public InputStream generatePdfFile(ArrayList<String> datamatrices) throws IOException {
+    public InputStream generatePdfFile(Optional<List<String>> datamatrices) throws IOException {
         PDDocument document = new PDDocument();
         PDPage firstPage = new PDPage();
         document.addPage(firstPage);
@@ -34,7 +35,7 @@ public class PdfService {
         // Positions for left bottom corner of the first image (beginning of page) on the first page
         float positionX = 100;
         float positionY = 562;
-        for (String datamatrix : datamatrices) {
+        for (String datamatrix : datamatrices.get()) {
             byte[] ba = java.util.Base64.getDecoder().decode(datamatrix);
             PDImageXObject datamatrixImage = PDImageXObject.createFromByteArray(document, ba, "datamatrixImage");
             double widthOfDatamatrix = datamatrixImage.getWidth();
