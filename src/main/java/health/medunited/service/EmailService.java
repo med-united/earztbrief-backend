@@ -15,6 +15,8 @@ import io.quarkus.mailer.Mailer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+
 @ApplicationScoped
 public class EmailService {
 
@@ -31,22 +33,22 @@ public class EmailService {
         String toKimAddress = letterRequest.getContactEmail();
 
         try {
-            MimeBodyPart attachment = new MimeBodyPart();
-            attachment.setContent(letterRequest.getAttachment(), "text/xml");
 
             MimeBodyPart pdf = new MimeBodyPart();
-            ByteArrayDataSource ds = new ByteArrayDataSource(pdfService.generatePdfFile().readAllBytes(),
+            ByteArrayDataSource ds = new ByteArrayDataSource(pdfService.generatePdfFile(letterRequest.getDatamatrices()).readAllBytes(),
                     "application/pdf");
             pdf.setDataHandler(new DataHandler(ds));
 
-            mailer.send(Mail.withText(toKimAddress, MailSubjects.EARZTBRIEF.value,
-                            letterRequest.getContactMessage())
-                    .addAttachment("xmlattach",
-                            attachment.getInputStream().readAllBytes(), "text/xml")
-                    .addAttachment("pdfattach",
-                            pdf.getInputStream().readAllBytes(), "application/pdf")
+            Mail email = Mail.withText(toKimAddress, MailSubjects.EARZTBRIEF.value, letterRequest.getContactMessage());
+            ArrayList<String> allXMLs = letterRequest.getAttachment();
+            for (int i = 0; i < allXMLs.size(); i++) {
+                String xml = allXMLs.get(i);
+                MimeBodyPart attachment = new MimeBodyPart();
+                attachment.setContent(xml, "text/xml");
+                email = email.addAttachment("xmlattach" + i+1, attachment.getInputStream().readAllBytes(), "text/xml");
+            }
+            mailer.send(email.addAttachment("pdfattach", pdf.getInputStream().readAllBytes(), "application/pdf"));
 
-            );
             log.info("E-Mail sent successfully to: {}", toKimAddress);
         } catch (Exception e) {
             log.error("Error during sending E-Prescription: {}", e.getMessage());
