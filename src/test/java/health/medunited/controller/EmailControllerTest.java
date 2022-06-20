@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.ArrayList;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,7 +32,11 @@ class EmailControllerTest {
     @Test
     void testEarztbriefSending() {
 
-        LetterRequest request = new LetterRequest("Test Name", TODOCTOR, "Earztbrief request", "Xml text");
+        ArrayList<String> attachment = new ArrayList<String>();
+        attachment.add("XML file");
+        ArrayList<String> datamatrices = new ArrayList<String>();
+        datamatrices.add("Xml text");
+        LetterRequest request = new LetterRequest("Test Name", TODOCTOR, "Message", attachment, datamatrices);
 
         given()
                 .contentType("application/json")
