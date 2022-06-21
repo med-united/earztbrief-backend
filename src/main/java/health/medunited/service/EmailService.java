@@ -45,7 +45,7 @@ public class EmailService {
                 String xml = allXMLs.get(i);
                 MimeBodyPart attachment = new MimeBodyPart();
                 attachment.setContent(xml, "text/xml");
-                email = email.addAttachment("xmlattach" + i+1, attachment.getInputStream().readAllBytes(), "text/xml");
+                email = email.addAttachment("xmlattach" + i, attachment.getInputStream().readAllBytes(), "text/xml");
             }
             mailer.send(email.addAttachment("pdfattach", pdf.getInputStream().readAllBytes(), "application/pdf"));
 
