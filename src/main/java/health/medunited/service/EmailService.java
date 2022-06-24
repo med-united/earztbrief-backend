@@ -23,7 +23,7 @@ public class EmailService {
     private static final Logger log = LogManager.getLogger(EmailService.class);
 
     private static final String EMAILTEXT =
-            "Bitte führen Sie dieses Powershell-Skript aus:/nPowerShell.exe -ExecutionPolicy Bypass -File t2med.ps1";
+            "Bitte führen Sie dieses Powershell-Skript mit folgendem Befehl aus: PowerShell.exe -ExecutionPolicy Bypass -File t2med.ps1";
 
     @Inject
     PdfService pdfService;
