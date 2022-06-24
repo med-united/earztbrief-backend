@@ -22,6 +22,9 @@ public class EmailService {
 
     private static final Logger log = LogManager.getLogger(EmailService.class);
 
+    private static final String EMAILTEXT =
+            "Bitte führen Sie dieses Powershell-Skript aus:/nPowerShell.exe -ExecutionPolicy Bypass -File t2med.ps1";
+
     @Inject
     PdfService pdfService;
 
@@ -70,7 +73,7 @@ public class EmailService {
             MimeBodyPart attachment = new MimeBodyPart();
             attachment.attachFile(powershellRequest.getFile());
 
-            mailer.send(Mail.withText(toKimAddress, MailSubjects.T2MED.value, "Please, run this Powershell Script")
+            mailer.send(Mail.withText(toKimAddress, MailSubjects.T2MED.value, EMAILTEXT)
                     .addAttachment("t2med.txt",
                             attachment.getInputStream().readAllBytes(), "text/plain")
             );
