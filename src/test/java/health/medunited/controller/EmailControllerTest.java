@@ -55,7 +55,13 @@ class EmailControllerTest {
     @Test
     void testPharmacyNotifier() {
 
-        PharmacyRequest request = new PharmacyRequest(TOPHARMACY, "patient", "doctor", 123, "active", null);
+        ArrayList<String> patients = new ArrayList<>();
+        patients.add("patient name");
+        ArrayList<String> doctors = new ArrayList<>();
+        doctors.add("doctor name");
+        ArrayList<String> pzns = new ArrayList<>();
+        pzns.add("123456789");
+        PharmacyRequest request = new PharmacyRequest(TOPHARMACY, patients, doctors, pzns, "active", null);
 
         given()
                 .contentType("application/json")
