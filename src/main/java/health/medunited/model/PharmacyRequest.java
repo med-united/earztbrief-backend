@@ -1,16 +1,17 @@
 package health.medunited.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class PharmacyRequest {
 
     private String pharmacyEmail;
 
-    private String patient;
+    private List<String> patients;
 
-    private String doctor;
+    private List<String> doctors;
 
-    private int pzn;
+    private List<String> pzns;
 
     private String status;
 
@@ -18,11 +19,11 @@ public class PharmacyRequest {
 
     public PharmacyRequest() {
     }
-    public PharmacyRequest(String pharmacyEmail, String patient, String doctor, int pzn, String status, Date requestDate) {
+    public PharmacyRequest(String pharmacyEmail, List<String> patients, List<String> doctors, List<String> pzns, String status, Date requestDate) {
         this.pharmacyEmail = pharmacyEmail;
-        this.patient = patient;
-        this.doctor = doctor;
-        this.pzn = pzn;
+        this.patients = patients;
+        this.doctors = doctors;
+        this.pzns = pzns;
         this.status = status;
         this.requestDate = requestDate;
     }
@@ -35,28 +36,28 @@ public class PharmacyRequest {
         this.pharmacyEmail = pharmacyEmail;
     }
 
-    public String getPatient() {
-        return patient;
+    public List<String> getPatients() {
+        return patients;
     }
 
-    public void setPatient(String patient) {
-        this.patient = patient;
+    public void setPatients(List<String> patients) {
+        this.patients = patients;
     }
 
-    public String getDoctor() {
-        return doctor;
+    public List<String> getDoctors() {
+        return doctors;
     }
 
-    public void setDoctor(String doctor) {
-        this.doctor = doctor;
+    public void setDoctors(List<String> doctors) {
+        this.doctors = doctors;
     }
 
-    public int getPzn() {
-        return pzn;
+    public List<String> getPzns() {
+        return pzns;
     }
 
-    public void setPzn(int pzn) {
-        this.pzn = pzn;
+    public void setPzns(List<String> pzns) {
+        this.pzns = pzns;
     }
 
     public String getStatus() {

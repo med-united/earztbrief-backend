@@ -84,11 +84,15 @@ public class EmailService {
     }
 
     private String buildEmailText(PharmacyRequest pharmacyRequest) {
-        return pharmacyRequest.getPatient()
-                + ", " + pharmacyRequest.getDoctor()
-                + ", " + pharmacyRequest.getPzn()
-                + ", " + pharmacyRequest.getStatus()
-                + ", " + pharmacyRequest.getRequestDate();
+        int numberOfMedicationStatementsRequestedToPharmacy = pharmacyRequest.getPatients().size();
+        String text = "Patientenname, Name des Arztes, Medikamente pzn, Status, Anforderungsdatum " + "\n";
+        for (int i = 0; i < numberOfMedicationStatementsRequestedToPharmacy; i++) {
+            String patient = pharmacyRequest.getPatients().get(i);
+            String doctor = pharmacyRequest.getDoctors().get(i);
+            String pzn = pharmacyRequest.getPzns().get(i);
+            text += patient + ", " + doctor + ", " + pzn + ", " + pharmacyRequest.getStatus() + ", " + pharmacyRequest.getRequestDate() + "\n";
+        }
+        return text;
     }
 
 }
